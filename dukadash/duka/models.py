@@ -2,55 +2,53 @@ from django.db import models
 
 # Create your models here.
 
-class Merchant (models.Model):
-    name = models.CharField(max_length=100)
-    email = models.EmailField(max_length=100)
-    phone_number = models.CharField(max_length=20)
-    username = models.CharField(max_length=200)
-    password = models.CharField(max_length=200)
-    image = models.CharField(max_length=300, blank=True, null=True)
-    description = models.TextField(max_length=500)
+class Merchant(models.Model):
+    name = models.CharField(max_length=255)
+    username = models.CharField(max_length=150, unique=True)
+    email = models.EmailField(unique=True)
+    password = models.CharField(max_length=255)
+    image = models.CharField(max_length=255, blank=True, null=True)
 
-    def __str__(self) -> str:
-        return super().__str__() + self.name
+    def __str__(self):
+        return self.name
     
-class Store (models.Model):
-    name = models.CharField(max_length=100)
-    description = models.TextField(max_length=500)
-    image = models.CharField(max_length=300, blank=True, null=True)
-    location = models.CharField(max_length=75)
+class Store(models.Model):
+    name = models.CharField(max_length=255)
+    location = models.CharField(max_length=255)
+    image = models.CharField(max_length=255, blank=True, null=True)
+    description = models.CharField(max_length=500)
     merchant = models.ForeignKey(Merchant, on_delete=models.CASCADE)
     admin = models.ForeignKey('Admin', on_delete=models.SET_NULL, null=True, blank=True)
     clerk = models.ForeignKey('Clerk', on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return self.name
+
     
 class Admin(models.Model):
-    name = models.CharField(max_length=100)
-    email = models.EmailField(max_length=100)
-    phone_number = models.CharField(max_length=20)
-    username = models.CharField(max_length=200)
-    password = models.CharField(max_length=200)
-    image = models.CharField(max_length=300, blank=True, null=True)
-    description = models.TextField(max_length=500)
-    store = models.ForeignKey(Store, on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
+    username = models.CharField(max_length=150, unique=True)
+    email = models.EmailField(unique=True)
+    password = models.CharField(max_length=255)
+    image = models.CharField(max_length=255, blank=True, null=True)
+    role = models.CharField(max_length=50)
 
-    def __str__(self) -> str:
-        return super().__str__() + self.name
-    
-class Clerk (models.Model):
-    name = models.CharField(max_length=100)
-    email = models.EmailField(max_length=100)
-    phone_number = models.CharField(max_length=20)
-    username = models.CharField(max_length=200)
-    password = models.CharField(max_length=200)
-    image = models.CharField(max_length=300, blank=True, null=True)
-    description = models.TextField(max_length=500)
-    store = models.ForeignKey(Store, on_delete=models.CASCADE)
+    def __str__(self):
+        return self.name
 
-    def __str__(self) -> str:
-        return super().__str__() + self.name
+class Clerk(models.Model):
+    name = models.CharField(max_length=255)
+    username = models.CharField(max_length=150, unique=True)
+    email = models.EmailField(unique=True)
+    password = models.CharField(max_length=255)
+    image = models.CharField(max_length=255, blank=True, null=True)
+    role = models.CharField(max_length=50)
+    entries = models.IntegerField()
+    sales_made = models.IntegerField()
+
+    def __str__(self):
+        return self.name
+
 
 class Product(models.Model):
     name = models.CharField(max_length=255)
@@ -76,7 +74,8 @@ class Request(models.Model):
 
     def __str__(self):
         return f"Request from {self.requester_name} for {self.product.name}"
-
+    
+    
 class Payment(models.Model):
     store = models.ForeignKey(Store, on_delete=models.CASCADE)
     status = models.CharField(max_length=50)
@@ -87,3 +86,4 @@ class Payment(models.Model):
 
     def __str__(self):
         return f"Payment of {self.amount} for {self.store.name}"
+
